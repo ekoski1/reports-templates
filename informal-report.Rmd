@@ -1,0 +1,224 @@
+---
+# Change the title etc. according to your needs:
+title: "Report that I wrote"
+author: 
+- name: 'Some Person'
+- affiliation: 
+  - Sort of a company
+- name: 'Someone Else'
+- affiliation:
+  - This Place
+  - That Place
+  
+date: '`r format(Sys.Date(), "%d %B %Y")`'
+thanks: "**Corresponding author**: name@example.org"
+# keywords: 
+
+output:
+  pdf_document:
+    highlight: tango
+    latex_engine: lualatex   # xelatex or lualatex
+    keep_tex: yes
+    template: "informal-report-template.tex"
+    citation_package: biblatex      # natbib not tested
+    extra_dependencies: 
+      flafter: null
+      parskip: ["parfill"]
+
+  html_document:
+    highlight: tango
+    theme: default
+    keep_md: yes
+
+
+papersize: letter
+geometry: margin=2.54cm   # change if A4
+# alternative: left=2.54cm,top=2.54cm,right=2.54cm,bottom=2.54cm
+
+lang: en-US
+fontsize: 11pt
+
+# dir:             # in theory, could support bidirectional text using bidi
+
+########################################################
+# Select an NFSS font family (if desired) and optionally 
+# override with individual fonts (starting with mainfont);
+# the latter use fontspec (only for XeLaTeX or LuaLaTeX). 
+
+fontfamily: mathpazo
+# # fontfamily: tgschola
+# fontfamily: palatino
+# # fontfamily: helvet
+fontdefault: rm   # rm, sf, tt
+
+# mainfont: texgyrepagella-regular.otf
+# mainfontoptions: "BoldFont=texgyrepagella-bold.otf,
+#  ItalicFont=texgyrepagella-italic.otf,
+#  BoldItalicFont=texgyrepagella-bolditalic.otf"
+# mathfont: texgyrepagella-math.otf
+# sansfont: zhv.otf                 # Helvetica
+# monofont: inconsolata.otf
+authorfont: zhv-Bol.otf           # Helvetica-Bold
+# authorfont: AlegreyaSans-Bold.otf
+# titlefont: texgyrepagella-regular.otf
+# pagefont: texgyrepagella-regular.otf
+# bibliofont: texgyrepagella-regular.otf
+urlfont: zhv.otf
+
+########################################################
+
+footnotefamily:             # rm (default), sf, tt
+urlstyle:                   # rm, sf (default), tt
+
+colorlinks: 
+  linkcolor: Maroon
+  citecolor: PineGreen
+  urlcolor: RoyalPurple
+
+marking: DRAFT
+markingcolor: ForestGreen
+
+abstract: "This is an R markdown template for an informal report with no title page, resembling in format article manuscripts submitted to journals in political science or economics. It is intended for use with the corresponding latex template informal-report-template.tex. It is heavily indebted to Steven Miller's article template at [https://github.com/svmiller/svm-r-markdown-templates](https://github.com/svmiller/svm-r-markdown-templates), but has accumulated various changes (sometimes enhancements) as I've used it. It is free for anyone's use under the terms of the MIT license; see LICENSE.md."
+
+header-includes: 
+  \renewcommand\textfraction{0.15}
+
+skipbeforeabstract: 2pt   # tweak space between first hline and abstract
+
+appendices:
+  ownnumbering: yes     # give appendices their own pagination: A-1, B-1 etc. 
+supersection:           # used for "Appendices" and "References"
+  size: Large
+  series: bfseries  
+numbersections:
+  secnumdepth: 3
+  
+graphics: yes
+  
+bibliography: "generic.bib"
+biblio-style: alphabetic  # choices include ieee, acm, apa, mls, alphabetic, authoryear, etc.
+bibliosize: footnotesize
+biblatexoptions: hyperref=true,backref=true
+referencepagenumbers:
+  prefix: 'ref--'           # prefix applied to roman page numbers in references section
+
+figtabcounterwithin: yes
+
+# Customize bullets, because we can
+labelitemi: triangleright
+labelitemii: guillemotright
+labelitemiii: textbullet
+labelitemiv: textopenbullet
+
+
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE)
+
+docType <- "informal report"
+```
+
+```{r setup, include=FALSE, message=FALSE}
+source("setup.R")
+```
+
+\blfootnote{\textbf{Current version:} `r format(Sys.time(), '%B %d, %Y')`; \textbf{commit:} `r gitStatusBrief`}
+
+```{r more_setup, include=FALSE}
+
+source("utilFunctions.R")
+
+source("conversions.R")
+```
+
+# Introduction
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.[@nyserdaNewYorkState2019][@epaInventoryGreenhouseGas2017] Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+
+> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+
+\textit{This should be italicized.}
+\texttt{This should be monotype.}
+
+- We have bullets
+  - Yes we do
+    - We have bullets
+      - How 'bout you?
+
+\clearpage
+
+# Tools and methods
+
+\begin{framed}
+\begin{LARGE}LARGE\end{LARGE}
+
+\begin{Large}Large\end{Large}
+
+\begin{large}large\end{large}
+
+\begin{normalsize}normalsize\end{normalsize}
+
+\begin{small}small\end{small}
+
+\begin{footnotesize}footnotesize\end{footnotesize}
+
+\begin{scriptsize}scriptsize\end{scriptsize}
+
+\begin{tiny}tiny\end{tiny}
+\end{framed}
+
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=My nice heading]
+This is another \textbf{tcolorbox}.
+\tcblower
+Here, you see the lower part of the box.
+\end{tcolorbox}
+
+```{r aTable, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE, out.extra=""}
+
+tibble(
+  Scenario = c("A", "B"),
+  Revenue = c(20000, 30000),
+  Cost = c(17000, 21000)
+) %>%
+  kable(format = "latex", align = "lrr", escape = FALSE, 
+        booktabs = TRUE, 
+        linesep = c(""),
+        caption = tableCaption("Caption text")) 
+
+```
+
+\texttt{This will be rendered in monotype font.}
+
+\startofappendices
+
+\anappendix{Name of appendix}
+
+```{r figureExample, fig.cap="figure example", out.extra = "", eval = TRUE} 
+# "out.extra" ensures figure label is created. 
+
+x <- seq(-10,10,by=0.01)
+plot(x, x^2+x+1, type = "l")
+```
+
+Figure \ref{fig:figureExample} is an example of a figure. 
+
+\newpage
+\anappendix{Another appendix}
+
+```{r xtable-example, eval = TRUE}
+data(mtcars)
+
+kable(mtcars,
+         caption="Data structure for analysis")
+```
+
+Table \ref{tab:xtable-example} is an example of a table. 
+
+\pagenumbering{arabic}
+\renewcommand{\thepage}{\thesection--\arabic{page}}
+
+\appendicesendhere
+
+\startofreferences

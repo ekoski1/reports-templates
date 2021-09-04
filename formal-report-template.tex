@@ -1,0 +1,741 @@
+% LaTeX template for academic and professional reports
+%
+% Began as a heavily modified version of Sebastian Sauer's yart template at 
+% https://github.com/sebastiansauer/yart. Sauer would probably not recognize very much 
+% of the present contents. Also includes elements of Steven Miller's article template 
+% at https://github.com/svmiller/svm-r-markdown-templates. 
+% 
+% Major changes by Eric Koski to add elements common in corporate/government/NGO technical reports. 
+% Intended for use with Rmarkdown. Might be usable standalone but not really intended for that. 
+% Uses biblatex and hyperref for hyperlinked references and back-references. Many parameters are 
+% controlled through the YAML preamble. Uses fontspec so is compatible only with xelatex or lualatex. 
+
+
+\documentclass[
+  $if(fontsize)$$fontsize$,$endif$
+  $if(lang)$$babel-lang$,$endif$
+  $if(papersize)$$papersize$paper,$endif$
+  $for(classoption)$$classoption$$sep$,$endfor$]{article}
+  
+\usepackage[usenames,dvipsnames,svgnames]{xcolor}   % all the colors, yes all of them
+
+$if(graphics)$
+  \usepackage{graphicx,grffile}
+  \makeatletter
+  \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+  \makeatother
+  % Scale images if necessary, so that they will not overflow the page
+  % margins by default, and it is still possible to overwrite the defaults
+  % using explicit options in \includegraphics[width, height, ...]{}
+  \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+$endif$
+
+% \usepackage{scrlayer-scrpage}   % don't think we need this because we have fancyhdr
+% \usepackage{eso-pic}    % what is this really for?
+
+$if(euro)$
+  \newcommand{\euro}{â¬}
+$endif$
+  
+$if(geometry)$
+  \usepackage[$geometry$]{geometry}
+$else$
+  \usepackage[left=2.54cm,top=2.54cm,right=2.54cm,bottom=2.54cm]{geometry}
+$endif$
+
+% \usepackage{textcomp}     % seems to be obsolete
+
+\usepackage{setspace}   %   \usepackage{setspace}
+$if(linestretch)$
+  \setstretch{$linestretch$}
+$endif$
+
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+\usepackage{ifxetex,ifluatex}
+
+\usepackage{amssymb,amsmath} % must be loaded earlier than mathspec
+
+\ifxetex
+  \usepackage{mathspec}
+\else
+  \usepackage{fontspec}
+\fi
+
+%% Fonts
+
+\usepackage[$if(fontenc)$$fontenc$$else$T1$endif$]{fontenc}
+%% \usepackage[utf8]{inputenc} %% Not needed since xelatex uses utf8 natively
+
+\defaultfontfeatures{Ligatures=TeX}
+
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+
+\usepackage{hyphenat}   % Use, for example, in government\hyp{}wide to prevent overfull hboxes
+                        % \hyp{} provides the hyphen for hyphenated words while allowing 
+                        % LaTeX to hyphenate the rest of the word if necessary. 
+
+%% Fonts can be specified as fontfamily (e.g., "mathpazo" or "pagella" or using 
+%% \setmainfont. Doing both wouldn't make sense, but after either, we allow defining 
+%% specific fonts such as titlefont, authorfont, pagefont as exceptions. 
+
+$if(fontfamily)$
+  \usepackage[$for(fontfamilyoptions)$$fontfamilyoptions$$sep$,$endfor$]{$fontfamily$}
+  % \newfontfamily\myfontfamily[$for(fontfamilyoptions)$$fontfamilyoptions$$sep$,$endfor$]{$fontfamily$}
+  % \renewcommand{\normalfont}{\myfontfamily}
+  $if(fontdefault)$%  % default selector: rm, sf, or tt
+    \renewcommand{\familydefault}{\$fontdefault$default}
+  $endif$
+$else$
+  \usepackage{lmodern}
+$endif$
+
+$if(mainfont)$
+  \setmainfont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+  \newfontfamily\mymainfont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+  \renewcommand{\normalfont}{\mymainfont}
+  $if(mathfont)$
+    \ifxetex
+      \setmathfont(Digits,Latin,Greek)[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+    \else
+      \setmathrm{$mathfont$}
+    \fi
+  $endif$
+  $if(sansfont)$
+    \setsansfont[$for(sansfontoptions)$$sansfontoptions$$sep$,$endfor$]{$sansfont$}
+  $endif$
+  $if(monofont)$
+    \setmonofont[$for(monofontoptions)$$monofontoptions$$sep$,$endfor$]{$monofont$}
+  $endif$
+  $if(titlefont)$ % font for title on first page
+    \newfontfamily\titlefont[]{$titlefont$}
+  $else$
+    \newfontfamily\titlefont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+  $endif$
+  $if(authorfont)$  % font for author name on first page
+    \newfontfamily\authorfont[]{$authorfont$}
+  $else$
+    \newfontfamily\authorfont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+  $endif$
+  $if(pagefont)$  % page number font
+    \newfontfamily\pagefont[]{$pagefont$}
+  $else$
+    \newfontfamily\pagefont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+  $endif$
+  $if(footnotefont)$  % font for footnote text
+    \newfontfamily\footnotefont[]{$footnotefont$}
+  $else$
+    \newfontfamily\footnotefont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+  $endif$
+  $if(bibliofont)$  % bibliography font
+    \newfontfamily\bibliofont[]{$bibliofont$}
+  $else$
+    \newfontfamily\bibliofont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+  $endif$
+$else$  % no mainfont specified; default behavior specified differently
+  $if(titlefont)$ % font for title on first page
+    \newfontfamily\titlefont[]{$titlefont$}
+  $else$
+    \newcommand{\titlefont}{\normalfont}
+  $endif$
+  $if(authorfont)$  % font for author name on first page
+    \newfontfamily\authorfont[]{$authorfont$}
+  $else$
+    \newcommand{\authorfont}{\normalfont}
+  $endif$
+  $if(pagefont)$  % page number font
+    \newfontfamily\pagefont[]{$pagefont$}
+  $else$
+    \newcommand{\pagefont}{\normalfont}
+  $endif$
+  $if(footnotefont)$  % font for footnote text
+    \newfontfamily\footnotefont[]{$footnotefont$}
+  $else$
+    \newcommand{\footnotefont}{\normalfont}
+  $endif$
+  $if(bibliofont)$  % bibliography font
+    \newfontfamily\bibliofont[]{$bibliofont$}
+  $else$
+    \newcommand{\bibliofont}{\normalfont}
+  $endif$
+$endif$
+
+%% bibliography
+
+$if(bibliosize)$  % bibliography font size
+  \newcommand{\bibliosize}{\$bibliosize$}
+$else$
+  \newcommand{\bibliosize}{\small}
+$endif$
+
+%% URLs
+
+\usepackage{url}[hyphens]
+\def\UrlBreaks{\do\/\do-}
+
+$if(urlfont)$
+  \newfontfamily\myurlfont[]{$urlfont$}
+  \def\UrlFont{\myurlfont}
+$endif$
+
+%% Customize bullets: %{\textopenbullet} %{\rhd} %{\textbullet} 
+$if(labelitemi)$
+  \renewcommand{\labelitemi}{\$labelitemi$} 
+$endif$
+$if(labelitemii)$
+  \renewcommand{\labelitemii}{\$labelitemii$} 
+$endif$
+$if(labelitemiii)$
+  \renewcommand{\labelitemiii}{\$labelitemiii$} 
+$endif$
+$if(labelitemiv)$
+  \renewcommand{\labelitemiv}{\$labelitemiv$} 
+$endif$
+
+%% footnotes
+
+% bottom option keeps footnotes from being rendered above bottom-of-page floats. 
+% multiple option should place commas between footnote marks in adjacent locations; 
+% seems not to be working. 
+\usepackage[bottom,multiple]{footmisc}
+\renewcommand\multfootsep{,}
+
+% Force footnotes to be rendered with the specified footnote font or a correct 
+% default font (not lmodern)
+\let\oldfootnotelayout\footnotelayout
+\renewcommand{\footnotelayout}{\oldfootnotelayout\footnotefont}
+
+\usepackage{etoolbox} % we patch some internal footnote commands to get 
+\makeatletter         % control over footnote fonts. 
+\patchcmd{\@footnotetext}{\footnotesize}{\footnotefont\footnotesize}{}{}
+\patchcmd{\@makefnmark}{\normalfont}{\footnotefont\scriptsize}{}{}
+\makeatother
+
+\newcommand\blfootnote[1]{%   % for unnumbered footnotes: https://tex.stackexchange.com/a/30726/221633
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+%% Table of contents, figures, tables
+
+\usepackage[toc]{appendix}
+
+\usepackage{tocloft}
+% \renewcommand\cftsecdotsep{4}
+\renewcommand\cftsubsecdotsep{4}
+\renewcommand\cftsubsubsecdotsep{4}
+\renewcommand\cftsecfont{\normalfont\large\bfseries}
+\renewcommand\cftsubsecfont{\normalfont\bfseries}
+\renewcommand\cftsubsubsecfont{\normalfont\itshape}
+\renewcommand\cftsecpagefont{\normalfont\large\bfseries}
+\renewcommand\cftsubsecpagefont{\normalfont\bfseries}
+\renewcommand\cftsubsubsecpagefont{\normalfont\itshape}
+
+% \usepackage[nottoc]{tocbibind}
+\usepackage[numbib,nottoc]{tocbibind}   % include bibliography (not working?) but not TOC in TOC
+
+
+\usepackage{flafter}            % So a figure or table doesn't appear above the 
+                                % title of the new section in which it appears
+\usepackage[format=plain,labelfont=bf,up,textfont=normal,up,justification=justified,singlelinecheck=false]{caption}
+\usepackage{fixltx2e} % provides \textsubscript
+\usepackage{longtable,booktabs}
+\usepackage{csquotes}
+\newcommand{\ts}{\thinspace}
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+% This should regulate where figures float
+% See: https://tex.stackexchange.com/questions/2275/keeping-tables-figures-close-to-where-they-are-mentioned
+\usepackage[section]{placeins}    % also gives us FloatBarrier
+
+\usepackage{tabto}
+\usepackage{float}
+\usepackage{framed}
+
+\usepackage{pgf}
+\usepackage{verbatim}
+\usepackage{environ}
+\usepackage{pdfpages}  % include other pdf file using \includepdf[pages={-}]{filepath.pdf}
+\usepackage{etoolbox}  % for changing font size of abstract
+\usepackage{tcolorbox} % lovely color boxes!
+
+
+$if(linestretch)$
+  \renewcommand{\baselinestretch}{$linestretch$}  % line distance
+$else$
+  \renewcommand{\baselinestretch}{1.5}  % default line distance is 1.5
+$endif$
+
+%% title formatting
+
+\usepackage{titlesec}
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titleformat*{\subsubsection}{\normalsize\itshape}
+\titleformat*{\paragraph}{\normalsize\itshape}  % Is placed at the front of paragraph
+\titleformat*{\subparagraph}{\normalsize}
+
+%% A pseudo-section format -- won't have labels, won't be included in table of comments
+$if(supersection)$
+  $if(supersection.size)$
+    \newcommand*{\supersectsize}{\$supersection.size$}
+  $else$
+    \newcommand*{\supersectsize}{\Large}
+  $endif$
+  $if(supersection.series)$
+    \newcommand*{\supersectseries}{\$supersection.series$}
+  $else$
+    \newcommand*{\supersectseries}{\bfseries}
+  $endif$
+  \newcommand*{\supersection}[1]{\label{ #1}\noindent\supersectsize\supersectseries #1}
+$else$
+  \newcommand*{\supersection}[1]{\label{ #1}\noindent\Large\bfseries #1}
+$endif$
+
+$if(figtabcounterwithin)$
+  \usepackage{chngcntr}
+  \counterwithin{figure}{section}
+  \counterwithin{table}{section}
+$endif$
+
+$if(appendices)$
+  \newcommand{\startofappendices}{
+    \clearpage
+    \pagebreak
+    \begin{appendices}
+    $if(appendices.name)$
+      \renewcommand{\appendixname}{$appendices.name$}
+    $else$
+      \renewcommand{\appendixname}{Appendix}
+    $endif$
+    \appendix
+  }
+
+  \newcommand{\appendicesendhere}{
+    \clearpage
+    \end{appendices}
+    \renewcommand{\appendixname}{}
+    \renewcommand{\appendixtocname}{}
+  }
+
+  \newcommand{\anappendix}[1]{
+    \clearpage
+    \pagebreak
+    $if(appendices.ownnumbering)$
+      \pagenumbering{arabic}%
+      $if(numbersections)$
+        \renewcommand{\thepage}{\thesection--\arabic{page}}%
+      $endif$
+    $endif$
+    \section{#1}%
+  }
+$endif$
+
+\newcommand{\startofreferences}{
+  %\pagebreak
+  \setcounter{secnumdepth}{0}
+  \setcounter{page}{1}
+  $if(referencepagenumbers)$
+    \pagenumbering{roman}
+    $if(referencepagenumbers.prefix)$
+      \newcommand{\refpagenumberprefix}{$referencepagenumbers.prefix$}
+      \renewcommand{\thepage}{\refpagenumberprefix%
+        \roman{page}}
+    $else$
+      \renewcommand{\thepage}{\roman{page}}
+    $endif$
+  $else$
+    \pagestyle{empty}
+  $endif$
+}
+
+
+$if(lang)$
+  \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+    \usepackage[shorthands=off,$for(babel-otherlangs)$$babel-otherlangs$,$endfor$main=$babel-lang$]{babel}
+    $if(babel-newcommands)$
+      $babel-newcommands$
+    $endif$
+  \else
+    \usepackage{polyglossia}
+    \setmainlanguage[$polyglossia-lang.options$]{$polyglossia-lang.name$}
+    $for(polyglossia-otherlangs)$
+      \setotherlanguage[$polyglossia-otherlangs.options$]{$polyglossia-otherlangs.name$}
+    $endfor$
+  \fi
+$endif$
+
+
+$if(listings)$
+\usepackage{listings}
+$endif$
+
+$if(lhs)$
+  \lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
+$endif$
+
+$if(highlighting-macros)$
+  $highlighting-macros$
+$endif$
+
+$if(verbatim-in-note)$
+  \usepackage{fancyvrb}
+  \VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
+
+$if(graphics)$
+  \usepackage{graphicx,grffile}
+  \makeatletter
+  \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+  \makeatother
+  % Scale images if necessary, so that they will not overflow the page
+  % margins by default, and it is still possible to overwrite the defaults
+  % using explicit options in \includegraphics[width, height, ...]{}
+  \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+$endif$
+
+$if(links-as-notes)$
+  % Make links footnotes instead of hotlinks:
+  \renewcommand{\href}[2]{#2\footnote{\url{#1}}}
+$endif$
+
+$if(strikeout)$
+  \usepackage[normalem]{ulem}
+  % avoid problems with \sout in headers with hyperref:
+  \pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+$endif$
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+  
+$if(numbersections)$
+  \setcounter{secnumdepth}{5}
+$else$
+  \setcounter{secnumdepth}{0}
+$endif$
+
+$if(quotesize)$
+  \AtBeginEnvironment{quote}{\$quotesize$}    % https://tex.stackexchange.com/questions/325695/how-to-style-blockquote
+$else$
+  \AtBeginEnvironment{quote}{\normalsize}
+$endif$
+
+% \AtBeginEnvironment{quote}{\singlespace\vspace{-\topsep}\small}
+% \AtEndEnvironment{quote}{\vspace{-\topsep}\endsinglespace}
+
+$if(subparagraph)$
+$else$
+  % Redefines (sub)paragraphs to behave more like sections
+  \ifx\paragraph\undefined\else
+    \let\oldparagraph\paragraph
+    \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \fi
+  \ifx\subparagraph\undefined\else
+    \let\oldsubparagraph\subparagraph
+    \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \fi
+$endif$
+
+$if(dir)$     % text direction; bidi is used for mixed right-to-left and left-to-right text
+  \ifxetex
+    % load bidi as late as possible as it modifies e.g. graphicx
+    $if(latex-dir-rtl)$
+      \usepackage[RTLdocument]{bidi}
+    $else$
+      \usepackage{bidi}
+    $endif$
+  \fi
+  \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+    \TeXXeTstate=1
+    \newcommand{\RL}[1]{\beginR #1\endR}
+    \newcommand{\LR}[1]{\beginL #1\endL}
+    \newenvironment{RTL}{\beginR}{\endR}
+    \newenvironment{LTR}{\beginL}{\endL}
+  \fi
+$endif$
+
+
+\usepackage{sparklines}
+% The height of the sparklines in ex units
+\renewcommand\sparklineheight{1.75}
+% The line width
+\setlength\sparklinethickness{0.4pt}
+% The color of the sparkline
+\definecolor{sparklinecolor}{named}{blue}
+% The color of the sparkine rectangle when present
+\definecolor{sparkrectanglecolor}{gray}{0.8}
+% The dot width
+\setlength\sparkdotwidth{2pt}
+% The color of the spikes
+\definecolor{sparkspikecolor}{named}{blue}
+% The color of the bottom line when present
+\definecolor{bottomlinecolor}{gray}{0.2}
+% The thickness of the bottom line
+\setlength\sparkbottomlinethickness{.1pt}
+% The clipping separation (need sparklines v1.7 or later)
+\setlength\sparklineclipsep{1pt}
+
+
+$if(natbib)$
+  \usepackage{natbib}
+  \bibliographystyle{$if(biblio-style)$$biblio-style$$else$plainnat$endif$}
+$endif$
+
+$if(biblatex)$
+  \usepackage$if(biblio-style)$[style=$biblio-style$]$endif${biblatex}
+  $if(biblatexoptions)$
+    \ExecuteBibliographyOptions{$for(biblatexoptions)$$biblatexoptions$$sep$,$endfor$}
+  $endif$
+  $for(bibliography)$
+    \addbibresource{$bibliography$}
+  $endfor$
+$endif$
+
+$for(header-includes)$
+  $header-includes$
+$endfor$
+
+%% Page headers and footers
+%% We use this to label pages "DRAFT" etc. 
+
+\usepackage{fancyhdr}   % A lot more can be done with this versatile package!
+\pagestyle{fancy}
+
+\setlength{\headheight}{13.6pt}
+
+\fancyhf{} % clear all header and footer fields
+\fancyfoot[C]{\pagefont\selectfont{\thepage}} % except the center
+\fancyhead[C]{%
+  $if(marking)$  %% For markings such as "DRAFT", "CONFIDENTIAL", ...
+    {\sffamily\large%
+      $if(markingcolor)$\color{$markingcolor$}$endif$%
+      \textbf{$marking$}}%
+  $else$%
+    {}%
+  $endif$}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%% We want the same formatting if pagestyle gets set back to plain
+\fancypagestyle{plain}{%
+\fancyhf{} % clear all header and footer fields
+\fancyfoot[C]{\pagefont\selectfont{\thepage}} % except the center
+\fancyhead[C]{%
+  $if(marking)$
+    {\sffamily\large%
+      $if(markingcolor)$\color{$markingcolor$}$endif$%
+      \textbf{$marking$}}%
+  $else$%
+    {}%
+  $endif$}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+%% hyperref: "Make sure it comes last of your loaded packages, to give it a fighting chance 
+%% of not being over-written, since its job is to redefine many LaTeX commands." 
+
+\makeatletter
+\@ifpackageloaded{hyperref}
+  {}
+  {%
+  \ifxetex
+%    \PassOptionsToPackage{hyphens}{url}
+    \usepackage[
+      setpagesize=false, % page size defined by xetex
+      unicode=false, % unicode breaks when used with xetex
+      xetex]{hyperref}
+  \else
+%    \PassOptionsToPackage{hyphens}{url}
+    \usepackage[unicode=true]{hyperref}
+  \fi
+}
+\makeatother
+
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            final=true,
+            debug=true,
+            pdftitle={$title$$if(subtitle)$: $subtitle$$endif$},
+            $if(author)$
+              pdfauthor={$for(author)$$author.name$ $sep$ $endfor$},
+            $endif$
+            pdfkeywords = {$if(keywords)$$keywords$$endif$},  
+            $if(colorlinks)$
+              colorlinks,
+              citecolor=$if(colorlinks.citecolor)$$colorlinks.citecolor$$else$green$endif$,
+              urlcolor=$if(colorlinks.urlcolor)$$colorlinks.urlcolor$$else$blue$endif$,
+              linkcolor=$if(colorlinks.linkcolor)$$colorlinks.linkcolor$$else$red$endif$,
+            $endif$
+            pdfborder={0 0 0}}
+
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+}%
+\item[]}{\end{list}}
+
+\usepackage{titling}
+
+$if(title)$
+  \title{$title$}
+$else$
+  \title{No title}
+$endif$
+
+
+\begin{document}  %%%%%%% main document %%%%%%%%%%%%%%%
+
+\pagenumbering{roman}
+
+\begin{titlingpage}
+
+
+  	\vspace{1cm}
+      \begin{figure}[H]
+        \begin{center}
+    			$if(logo)$
+    			  \includegraphics[width=
+    			    $if(logowidth)$
+    			      $logowidth$
+    		      $else$
+    			      3cm
+    		      $endif$]{$logo$}
+          $endif$
+    		\end{center}
+  		\end{figure}
+
+  	\vspace{2.5cm}
+  	
+    \begin{changemargin}{1cm}{1cm}
+      \begin{center}
+        $if(UP_title)$\uppercase$endif${\Huge\titlefont{$title$}\linebreak}
+        $if(UP_subtitle)$\uppercase$endif${\huge\titlefont{$subtitle$}}
+      \end{center}
+    \end{changemargin}
+
+    \vspace{4cm}
+
+    $if(course)$ $course$ $else$ \par $endif$
+    %\vspace{0.5cm}
+    $if(field)$ \large{$field$} $else$ \par $endif$
+
+    %\vspace{1cm}
+    \vspace*{\fill}
+
+    \begin{center}
+        % Consider using authblk (https://www.ctan.org/pkg/authblk) if you have a 
+        % complex author/affiliation situation.
+      \begin{authorfont}
+        $for(author)${$author.name$
+          \small{\textit{$for(author.affiliation)$%
+            {$author.affiliation$ \linebreak} $endfor$ }}}
+            \linebreak
+        $endfor$%
+        % \vspace{0.5cm}
+        $if(date)$ $date$ $endif$%
+      \end{authorfont}
+      \vspace{2cm}
+      
+      $if(marking)$  %% For markings such as "DRAFT", "CONFIDENTIAL", ...
+        {\sffamily\LARGE%
+        $if(markingcolor)$\color{$markingcolor$}$endif$%
+        \textbf{$marking$}}%
+      $else$%
+        {}%
+      $endif$
+      
+    \end{center}
+    \thispagestyle{empty}
+  \end{titlingpage}
+
+\normalfont
+
+\newpage
+\pagestyle{plain}
+% \mbox{}
+
+$if(abstractfontsize)$
+  \patchcmd{\abstract}{\small}{\$abstractfontsize$}{}{}
+$else$
+  \patchcmd{\abstract}{\small}{\large}{}{}
+$endif$
+
+$if(abstractname)$
+  \renewcommand{\abstractname}{\supersection{$abstractname$}\\ \vspace{0.5cm}}
+$else$
+  \renewcommand{\abstractname}{\supersection{Abstract}\\ \vspace{0.5cm}}
+$endif$
+
+$if(abstract)$
+  \begin{abstract}
+    \noindent $abstract$
+  \end{abstract}
+  \newpage
+$endif$
+
+$for(include-before)$
+  $include-before$
+$endfor$
+
+$if(toc)$
+  {
+    $if(colorlinks)$
+      \hypersetup{linkcolor=$if(toccolor)$$toccolor$$else$black$endif$}
+    $endif$
+    \newpage
+    \setcounter{tocdepth}{$toc-depth$}
+    \tableofcontents
+  }
+$endif$
+
+$if(lof)$
+  $if(lof.ownpage)$
+    \newpage
+  $endif$
+  \listoffigures
+$endif$
+
+$if(lot)$
+  $if(lot.newpage)$
+    \newpage
+  $endif$
+  \listoftables
+$endif$
+
+\normalfont
+\newpage
+\pagenumbering{arabic}
+
+$body$
+
+$if(natbib)$
+  $if(bibliography)$
+    $if(biblio-title)$
+      $if(book-class)$
+        \renewcommand\bibname{$biblio-title$}
+      $else$
+        \renewcommand\refname{$biblio-title$}
+      $endif$
+    $endif$
+    \newpage
+    \bibliography{$for(bibliography)$$bibliography$$sep$,$endfor$}
+  $endif$
+$endif$
+
+$if(biblatex)$
+  \newpage
+  \printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+$endif$
+
+$for(include-after)$
+  $include-after$
+$endfor$
+
+\end{document}

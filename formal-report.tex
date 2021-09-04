@@ -1,0 +1,770 @@
+% LaTeX template for academic and professional reports
+%
+% Began as a heavily modified version of Sebastian Sauer's yart template at 
+% https://github.com/sebastiansauer/yart. Sauer would probably not recognize very much 
+% of the present contents. Also includes elements of Steven Miller's article template 
+% at https://github.com/svmiller/svm-r-markdown-templates. 
+% 
+% Major changes by Eric Koski to add elements common in corporate/government/NGO technical reports. 
+% Intended for use with Rmarkdown. Might be usable standalone but not really intended for that. 
+% Uses biblatex and hyperref for hyperlinked references and back-references. Many parameters are 
+% controlled through the YAML preamble. Uses fontspec so is compatible only with xelatex or lualatex. 
+
+
+\documentclass[
+  11pt,
+  american,
+  letterpaper,
+  ]{article}
+  
+\usepackage[usenames,dvipsnames,svgnames]{xcolor}   % all the colors, yes all of them
+
+  \usepackage{graphicx,grffile}
+  \makeatletter
+  \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+  \makeatother
+  % Scale images if necessary, so that they will not overflow the page
+  % margins by default, and it is still possible to overwrite the defaults
+  % using explicit options in \includegraphics[width, height, ...]{}
+  \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% \usepackage{scrlayer-scrpage}   % don't think we need this because we have fancyhdr
+% \usepackage{eso-pic}    % what is this really for?
+
+  
+  \usepackage[margin=2.54cm, headheight=15pt]{geometry}
+
+% \usepackage{textcomp}     % seems to be obsolete
+
+\usepackage{setspace}   %   \usepackage{setspace}
+  \setstretch{1.1}
+
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+
+\usepackage{ifxetex,ifluatex}
+
+\usepackage{amssymb,amsmath} % must be loaded earlier than mathspec
+
+\ifxetex
+  \usepackage{mathspec}
+\else
+  \usepackage{fontspec}
+\fi
+
+%% Fonts
+
+\usepackage[T1]{fontenc}
+%% \usepackage[utf8]{inputenc} %% Not needed since xelatex uses utf8 natively
+
+\defaultfontfeatures{Ligatures=TeX}
+
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+
+\usepackage{hyphenat}   % Use, for example, in government\hyp{}wide to prevent overfull hboxes
+                        % \hyp{} provides the hyphen for hyphenated words while allowing 
+                        % LaTeX to hyphenate the rest of the word if necessary. 
+
+%% Fonts can be specified as fontfamily (e.g., "mathpazo" or "pagella" or using 
+%% \setmainfont. Doing both wouldn't make sense, but after either, we allow defining 
+%% specific fonts such as titlefont, authorfont, pagefont as exceptions. 
+
+  \usepackage{lmodern}
+
+  \setmainfont[BoldFont=texgyrepagella-bold.otf,
+ItalicFont=texgyrepagella-italic.otf,
+BoldItalicFont=texgyrepagella-bolditalic.otf]{texgyrepagella-regular.otf}
+  \newfontfamily\mymainfont[BoldFont=texgyrepagella-bold.otf,
+ItalicFont=texgyrepagella-italic.otf,
+BoldItalicFont=texgyrepagella-bolditalic.otf]{texgyrepagella-regular.otf}
+  \renewcommand{\normalfont}{\mymainfont}
+      \ifxetex
+      \setmathfont(Digits,Latin,Greek)[]{texgyrepagella-math.otf}
+    \else
+      \setmathrm{texgyrepagella-math.otf}
+    \fi
+        \setsansfont[]{zhv.otf}
+        \setmonofont[]{inconsolata.otf}
+     % font for title on first page
+    \newfontfamily\titlefont[]{AlegreyaSans-Bold.otf}
+  
+  
+    \newfontfamily\authorfont[BoldFont=texgyrepagella-bold.otf,
+ItalicFont=texgyrepagella-italic.otf,
+BoldItalicFont=texgyrepagella-bolditalic.otf]{texgyrepagella-regular.otf}
+  
+  
+    \newfontfamily\pagefont[BoldFont=texgyrepagella-bold.otf,
+ItalicFont=texgyrepagella-italic.otf,
+BoldItalicFont=texgyrepagella-bolditalic.otf]{texgyrepagella-regular.otf}
+  
+  
+    \newfontfamily\footnotefont[BoldFont=texgyrepagella-bold.otf,
+ItalicFont=texgyrepagella-italic.otf,
+BoldItalicFont=texgyrepagella-bolditalic.otf]{texgyrepagella-regular.otf}
+  
+  
+    \newfontfamily\bibliofont[BoldFont=texgyrepagella-bold.otf,
+ItalicFont=texgyrepagella-italic.otf,
+BoldItalicFont=texgyrepagella-bolditalic.otf]{texgyrepagella-regular.otf}
+  
+
+%% bibliography
+
+  % bibliography font size
+  \newcommand{\bibliosize}{\small}
+
+
+%% URLs
+
+\usepackage{url}[hyphens]
+\def\UrlBreaks{\do\/\do-}
+
+  \newfontfamily\myurlfont[]{zhv.otf}
+  \def\UrlFont{\myurlfont}
+
+%% Customize bullets: %{\textopenbullet} %{\rhd} %{\textbullet} 
+  \renewcommand{\labelitemi}{\triangleright} 
+  \renewcommand{\labelitemii}{\guillemotright} 
+  \renewcommand{\labelitemiii}{\textbullet} 
+  \renewcommand{\labelitemiv}{\textopenbullet} 
+
+%% footnotes
+
+% bottom option keeps footnotes from being rendered above bottom-of-page floats. 
+% multiple option should place commas between footnote marks in adjacent locations; 
+% seems not to be working. 
+\usepackage[bottom,multiple]{footmisc}
+\renewcommand\multfootsep{,}
+
+% Force footnotes to be rendered with the specified footnote font or a correct 
+% default font (not lmodern)
+\let\oldfootnotelayout\footnotelayout
+\renewcommand{\footnotelayout}{\oldfootnotelayout\footnotefont}
+
+\usepackage{etoolbox} % we patch some internal footnote commands to get 
+\makeatletter         % control over footnote fonts. 
+\patchcmd{\@footnotetext}{\footnotesize}{\footnotefont\footnotesize}{}{}
+\patchcmd{\@makefnmark}{\normalfont}{\footnotefont\scriptsize}{}{}
+\makeatother
+
+\newcommand\blfootnote[1]{%   % for unnumbered footnotes: https://tex.stackexchange.com/a/30726/221633
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+%% Table of contents, figures, tables
+
+\usepackage[toc]{appendix}
+
+\usepackage{tocloft}
+% \renewcommand\cftsecdotsep{4}
+\renewcommand\cftsubsecdotsep{4}
+\renewcommand\cftsubsubsecdotsep{4}
+\renewcommand\cftsecfont{\normalfont\large\bfseries}
+\renewcommand\cftsubsecfont{\normalfont\bfseries}
+\renewcommand\cftsubsubsecfont{\normalfont\itshape}
+\renewcommand\cftsecpagefont{\normalfont\large\bfseries}
+\renewcommand\cftsubsecpagefont{\normalfont\bfseries}
+\renewcommand\cftsubsubsecpagefont{\normalfont\itshape}
+
+% \usepackage[nottoc]{tocbibind}
+\usepackage[numbib,nottoc]{tocbibind}   % include bibliography (not working?) but not TOC in TOC
+
+
+\usepackage{flafter}            % So a figure or table doesn't appear above the 
+                                % title of the new section in which it appears
+\usepackage[format=plain,labelfont=bf,up,textfont=normal,up,justification=justified,singlelinecheck=false]{caption}
+\usepackage{fixltx2e} % provides \textsubscript
+\usepackage{longtable,booktabs}
+\usepackage{csquotes}
+\newcommand{\ts}{\thinspace}
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+% This should regulate where figures float
+% See: https://tex.stackexchange.com/questions/2275/keeping-tables-figures-close-to-where-they-are-mentioned
+\usepackage[section]{placeins}    % also gives us FloatBarrier
+
+\usepackage{tabto}
+\usepackage{float}
+\usepackage{framed}
+
+\usepackage{pgf}
+\usepackage{verbatim}
+\usepackage{environ}
+\usepackage{pdfpages}  % include other pdf file using \includepdf[pages={-}]{filepath.pdf}
+\usepackage{etoolbox}  % for changing font size of abstract
+\usepackage{tcolorbox} % lovely color boxes!
+
+
+  \renewcommand{\baselinestretch}{1.1}  % line distance
+
+%% title formatting
+
+\usepackage{titlesec}
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titleformat*{\subsubsection}{\normalsize\itshape}
+\titleformat*{\paragraph}{\normalsize\itshape}  % Is placed at the front of paragraph
+\titleformat*{\subparagraph}{\normalsize}
+
+%% A pseudo-section format -- won't have labels, won't be included in table of comments
+  \newcommand*{\supersection}[1]{\label{ #1}\noindent\Large\bfseries #1}
+
+  \usepackage{chngcntr}
+  \counterwithin{figure}{section}
+  \counterwithin{table}{section}
+
+  \newcommand{\startofappendices}{
+    \clearpage
+    \pagebreak
+    \begin{appendices}
+          \renewcommand{\appendixname}{Appendix}
+        \appendix
+  }
+
+  \newcommand{\appendicesendhere}{
+    \clearpage
+    \end{appendices}
+    \renewcommand{\appendixname}{}
+    \renewcommand{\appendixtocname}{}
+  }
+
+  \newcommand{\anappendix}[1]{
+    \clearpage
+    \pagebreak
+          \pagenumbering{arabic}%
+              \renewcommand{\thepage}{\thesection--\arabic{page}}%
+              \section{#1}%
+  }
+
+\newcommand{\startofreferences}{
+  %\pagebreak
+  \setcounter{secnumdepth}{0}
+  \setcounter{page}{1}
+      \pagenumbering{roman}
+          \newcommand{\refpagenumberprefix}{ref--}
+      \renewcommand{\thepage}{\refpagenumberprefix%
+        \roman{page}}
+      }
+
+
+  \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+    \usepackage[shorthands=off,main=american]{babel}
+      \else
+    \usepackage{polyglossia}
+    \setmainlanguage[variant=american]{english}
+      \fi
+
+
+
+
+
+
+  \usepackage{graphicx,grffile}
+  \makeatletter
+  \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+  \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+  \makeatother
+  % Scale images if necessary, so that they will not overflow the page
+  % margins by default, and it is still possible to overwrite the defaults
+  % using explicit options in \includegraphics[width, height, ...]{}
+  \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+  
+  \setcounter{secnumdepth}{5}
+
+  \AtBeginEnvironment{quote}{\small}    % https://tex.stackexchange.com/questions/325695/how-to-style-blockquote
+
+% \AtBeginEnvironment{quote}{\singlespace\vspace{-\topsep}\small}
+% \AtEndEnvironment{quote}{\vspace{-\topsep}\endsinglespace}
+
+  % Redefines (sub)paragraphs to behave more like sections
+  \ifx\paragraph\undefined\else
+    \let\oldparagraph\paragraph
+    \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \fi
+  \ifx\subparagraph\undefined\else
+    \let\oldsubparagraph\subparagraph
+    \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \fi
+
+
+
+
+\usepackage{sparklines}
+% The height of the sparklines in ex units
+\renewcommand\sparklineheight{1.75}
+% The line width
+\setlength\sparklinethickness{0.4pt}
+% The color of the sparkline
+\definecolor{sparklinecolor}{named}{blue}
+% The color of the sparkine rectangle when present
+\definecolor{sparkrectanglecolor}{gray}{0.8}
+% The dot width
+\setlength\sparkdotwidth{2pt}
+% The color of the spikes
+\definecolor{sparkspikecolor}{named}{blue}
+% The color of the bottom line when present
+\definecolor{bottomlinecolor}{gray}{0.2}
+% The thickness of the bottom line
+\setlength\sparkbottomlinethickness{.1pt}
+% The clipping separation (need sparklines v1.7 or later)
+\setlength\sparklineclipsep{1pt}
+
+
+
+  \usepackage[style=alphabetic]{biblatex}
+      \ExecuteBibliographyOptions{hyperref=true,backref=true}
+        \addbibresource{generic.bib}
+  
+  \renewcommand\textfraction{0.15}
+  \usepackage{flafter}
+  \usepackage[parfill]{parskip}
+  \usepackage{booktabs}
+  \usepackage{longtable}
+  \usepackage{array}
+  \usepackage{multirow}
+  \usepackage{wrapfig}
+  \usepackage{float}
+  \usepackage{colortbl}
+  \usepackage{pdflscape}
+  \usepackage{tabu}
+  \usepackage{threeparttable}
+  \usepackage{threeparttablex}
+  \usepackage[normalem]{ulem}
+  \usepackage{makecell}
+  \usepackage{xcolor}
+  \usepackage{siunitx}
+
+%% Page headers and footers
+%% We use this to label pages "DRAFT" etc. 
+
+\usepackage{fancyhdr}   % A lot more can be done with this versatile package!
+\pagestyle{fancy}
+
+\setlength{\headheight}{13.6pt}
+
+\fancyhf{} % clear all header and footer fields
+\fancyfoot[C]{\pagefont\selectfont{\thepage}} % except the center
+\fancyhead[C]{%
+    %% For markings such as "DRAFT", "CONFIDENTIAL", ...
+    {\sffamily\large%
+      \color{ForestGreen}%
+      \textbf{DRAFT}}%
+  }
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%% We want the same formatting if pagestyle gets set back to plain
+\fancypagestyle{plain}{%
+\fancyhf{} % clear all header and footer fields
+\fancyfoot[C]{\pagefont\selectfont{\thepage}} % except the center
+\fancyhead[C]{%
+      {\sffamily\large%
+      \color{ForestGreen}%
+      \textbf{DRAFT}}%
+  }
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+%% hyperref: "Make sure it comes last of your loaded packages, to give it a fighting chance 
+%% of not being over-written, since its job is to redefine many LaTeX commands." 
+
+\makeatletter
+\@ifpackageloaded{hyperref}
+  {}
+  {%
+  \ifxetex
+%    \PassOptionsToPackage{hyphens}{url}
+    \usepackage[
+      setpagesize=false, % page size defined by xetex
+      unicode=false, % unicode breaks when used with xetex
+      xetex]{hyperref}
+  \else
+%    \PassOptionsToPackage{hyphens}{url}
+    \usepackage[unicode=true]{hyperref}
+  \fi
+}
+\makeatother
+
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            final=true,
+            debug=true,
+            pdftitle={Report that I wrote: It took a long time},
+                          pdfauthor={Some Person    Someone Else   },
+                        pdfkeywords = {},  
+                          colorlinks,
+              citecolor=PineGreen,
+              urlcolor=RoyalPurple,
+              linkcolor=Maroon,
+                        pdfborder={0 0 0}}
+
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+}%
+\item[]}{\end{list}}
+
+\usepackage{titling}
+
+  \title{Report that I wrote}
+
+
+\begin{document}  %%%%%%% main document %%%%%%%%%%%%%%%
+
+\pagenumbering{roman}
+
+\begin{titlingpage}
+
+
+  	\vspace{1cm}
+      \begin{figure}[H]
+        \begin{center}
+    			    			  \includegraphics[width=
+    			        			      3cm
+    		      ]{Branch-logo.png}
+              		\end{center}
+  		\end{figure}
+
+  	\vspace{2.5cm}
+  	
+    \begin{changemargin}{1cm}{1cm}
+      \begin{center}
+        \uppercase{\Huge\titlefont{Report that I wrote}\linebreak}
+        \uppercase{\huge\titlefont{It took a long time}}
+      \end{center}
+    \end{changemargin}
+
+    \vspace{4cm}
+
+     \par 
+    %\vspace{0.5cm}
+     \par 
+
+    %\vspace{1cm}
+    \vspace*{\fill}
+
+    \begin{center}
+        % Consider using authblk (https://www.ctan.org/pkg/authblk) if you have a 
+        % complex author/affiliation situation.
+      \begin{authorfont}
+        {Some Person
+          \small{\textit{ }}}
+            \linebreak
+        {
+          \small{\textit{%
+            {Sort of a company \linebreak}  }}}
+            \linebreak
+        {Someone Else
+          \small{\textit{ }}}
+            \linebreak
+        {
+          \small{\textit{%
+            {This Place \linebreak} %
+            {That Place \linebreak}  }}}
+            \linebreak
+        %
+        % \vspace{0.5cm}
+         03 September 2021 %
+      \end{authorfont}
+      \vspace{2cm}
+      
+        %% For markings such as "DRAFT", "CONFIDENTIAL", ...
+        {\sffamily\LARGE%
+        \color{ForestGreen}%
+        \textbf{DRAFT}}%
+      
+      
+    \end{center}
+    \thispagestyle{empty}
+  \end{titlingpage}
+
+\normalfont
+
+\newpage
+\pagestyle{plain}
+% \mbox{}
+
+  \patchcmd{\abstract}{\small}{\large}{}{}
+
+  \renewcommand{\abstractname}{\supersection{Abstract}\\ \vspace{0.5cm}}
+
+  \begin{abstract}
+    \noindent This is an R markdown template for a formal report with a
+title page with space for an optional logo. It began as a heavily
+modified version of Sebastian Sauer's yart template at
+\url{https://github.com/sebastiansauer/yart}. Also includes elements of
+Steven Miller's article template at
+\url{https://github.com/svmiller/svm-r-markdown-templates}. It is free
+for anyone's use under the terms of GPL-3; see LICENSE.md.
+  \end{abstract}
+  \newpage
+
+
+  {
+          \hypersetup{linkcolor=black}
+        \newpage
+    \setcounter{tocdepth}{3}
+    \tableofcontents
+  }
+
+    \listoffigures
+
+    \listoftables
+
+\normalfont
+\newpage
+\pagenumbering{arabic}
+
+\blfootnote{\textbf{Current version:} September 03, 2021; \textbf{commit:} 4e65165c 2021-09-04}
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor
+sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur
+adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+magna
+aliqua.\autocite{nyserdaNewYorkState2019}\autocite{epaInventoryGreenhouseGas2017}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua.
+
+\begin{quote}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna
+aliqua.\footnote{Lorem ipsum dolor sit amet, consectetur adipiscing
+  elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+  aliqua.}\footnote{another, non-Latin, footnote.} Lorem ipsum dolor sit
+amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur
+adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+magna aliqua.
+\end{quote}
+
+\textit{This should be italicized.} \texttt{This should be monotype.}
+
+\clearpage
+
+\hypertarget{tools-and-methods}{%
+\section{Tools and methods}\label{tools-and-methods}}
+
+\begin{framed}
+\begin{LARGE}LARGE\end{LARGE}
+
+\begin{Large}Large\end{Large}
+
+\begin{large}large\end{large}
+
+\begin{normalsize}normalsize\end{normalsize}
+
+\begin{small}small\end{small}
+
+\begin{footnotesize}footnotesize\end{footnotesize}
+
+\begin{scriptsize}scriptsize\end{scriptsize}
+
+\begin{tiny}tiny\end{tiny}
+\end{framed}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=My nice heading]
+This is another \textbf{tcolorbox}.
+\tcblower
+Here, you see the lower part of the box.
+\end{tcolorbox}
+
+\begin{itemize}
+\tightlist
+\item
+  We have bullets
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Yes we do
+
+    \begin{itemize}
+    \tightlist
+    \item
+      We have bullets
+
+      \begin{itemize}
+      \tightlist
+      \item
+        How 'bout you?
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{some-particular-stuff}{%
+\subsection{Some particular stuff}\label{some-particular-stuff}}
+
+\begin{equation}
+\displaystyle\int_{0}^{\infty}x^{-2.5}\,dx
+\end{equation}
+
+\hypertarget{now-a-figure}{%
+\subsubsection{Now, a figure}\label{now-a-figure}}
+
+\begin{figure}
+\includegraphics{formal-report_files/figure-latex/figure-example-1} \caption{Figure example}\label{fig:figure-example}
+\end{figure}
+
+Figure \ref{fig:figure-example} is an example figure.
+
+\FloatBarrier
+
+\hypertarget{data-sources}{%
+\section{Data sources}\label{data-sources}}
+
+\begin{table}
+
+\caption{\label{tab:xtable-example}Data structure for analysis}
+\centering
+\begin{tabular}[t]{l|r|r|r|r|r|r|r|r|r|r|r}
+\hline
+  & mpg & cyl & disp & hp & drat & wt & qsec & vs & am & gear & carb\\
+\hline
+Mazda RX4 & 21.0 & 6 & 160.0 & 110 & 3.90 & 2.620 & 16.46 & 0 & 1 & 4 & 4\\
+\hline
+Mazda RX4 Wag & 21.0 & 6 & 160.0 & 110 & 3.90 & 2.875 & 17.02 & 0 & 1 & 4 & 4\\
+\hline
+Datsun 710 & 22.8 & 4 & 108.0 & 93 & 3.85 & 2.320 & 18.61 & 1 & 1 & 4 & 1\\
+\hline
+Hornet 4 Drive & 21.4 & 6 & 258.0 & 110 & 3.08 & 3.215 & 19.44 & 1 & 0 & 3 & 1\\
+\hline
+Hornet Sportabout & 18.7 & 8 & 360.0 & 175 & 3.15 & 3.440 & 17.02 & 0 & 0 & 3 & 2\\
+\hline
+Valiant & 18.1 & 6 & 225.0 & 105 & 2.76 & 3.460 & 20.22 & 1 & 0 & 3 & 1\\
+\hline
+Duster 360 & 14.3 & 8 & 360.0 & 245 & 3.21 & 3.570 & 15.84 & 0 & 0 & 3 & 4\\
+\hline
+Merc 240D & 24.4 & 4 & 146.7 & 62 & 3.69 & 3.190 & 20.00 & 1 & 0 & 4 & 2\\
+\hline
+Merc 230 & 22.8 & 4 & 140.8 & 95 & 3.92 & 3.150 & 22.90 & 1 & 0 & 4 & 2\\
+\hline
+Merc 280 & 19.2 & 6 & 167.6 & 123 & 3.92 & 3.440 & 18.30 & 1 & 0 & 4 & 4\\
+\hline
+Merc 280C & 17.8 & 6 & 167.6 & 123 & 3.92 & 3.440 & 18.90 & 1 & 0 & 4 & 4\\
+\hline
+Merc 450SE & 16.4 & 8 & 275.8 & 180 & 3.07 & 4.070 & 17.40 & 0 & 0 & 3 & 3\\
+\hline
+Merc 450SL & 17.3 & 8 & 275.8 & 180 & 3.07 & 3.730 & 17.60 & 0 & 0 & 3 & 3\\
+\hline
+Merc 450SLC & 15.2 & 8 & 275.8 & 180 & 3.07 & 3.780 & 18.00 & 0 & 0 & 3 & 3\\
+\hline
+Cadillac Fleetwood & 10.4 & 8 & 472.0 & 205 & 2.93 & 5.250 & 17.98 & 0 & 0 & 3 & 4\\
+\hline
+Lincoln Continental & 10.4 & 8 & 460.0 & 215 & 3.00 & 5.424 & 17.82 & 0 & 0 & 3 & 4\\
+\hline
+Chrysler Imperial & 14.7 & 8 & 440.0 & 230 & 3.23 & 5.345 & 17.42 & 0 & 0 & 3 & 4\\
+\hline
+Fiat 128 & 32.4 & 4 & 78.7 & 66 & 4.08 & 2.200 & 19.47 & 1 & 1 & 4 & 1\\
+\hline
+Honda Civic & 30.4 & 4 & 75.7 & 52 & 4.93 & 1.615 & 18.52 & 1 & 1 & 4 & 2\\
+\hline
+Toyota Corolla & 33.9 & 4 & 71.1 & 65 & 4.22 & 1.835 & 19.90 & 1 & 1 & 4 & 1\\
+\hline
+Toyota Corona & 21.5 & 4 & 120.1 & 97 & 3.70 & 2.465 & 20.01 & 1 & 0 & 3 & 1\\
+\hline
+Dodge Challenger & 15.5 & 8 & 318.0 & 150 & 2.76 & 3.520 & 16.87 & 0 & 0 & 3 & 2\\
+\hline
+AMC Javelin & 15.2 & 8 & 304.0 & 150 & 3.15 & 3.435 & 17.30 & 0 & 0 & 3 & 2\\
+\hline
+Camaro Z28 & 13.3 & 8 & 350.0 & 245 & 3.73 & 3.840 & 15.41 & 0 & 0 & 3 & 4\\
+\hline
+Pontiac Firebird & 19.2 & 8 & 400.0 & 175 & 3.08 & 3.845 & 17.05 & 0 & 0 & 3 & 2\\
+\hline
+Fiat X1-9 & 27.3 & 4 & 79.0 & 66 & 4.08 & 1.935 & 18.90 & 1 & 1 & 4 & 1\\
+\hline
+Porsche 914-2 & 26.0 & 4 & 120.3 & 91 & 4.43 & 2.140 & 16.70 & 0 & 1 & 5 & 2\\
+\hline
+Lotus Europa & 30.4 & 4 & 95.1 & 113 & 3.77 & 1.513 & 16.90 & 1 & 1 & 5 & 2\\
+\hline
+Ford Pantera L & 15.8 & 8 & 351.0 & 264 & 4.22 & 3.170 & 14.50 & 0 & 1 & 5 & 4\\
+\hline
+Ferrari Dino & 19.7 & 6 & 145.0 & 175 & 3.62 & 2.770 & 15.50 & 0 & 1 & 5 & 6\\
+\hline
+Maserati Bora & 15.0 & 8 & 301.0 & 335 & 3.54 & 3.570 & 14.60 & 0 & 1 & 5 & 8\\
+\hline
+Volvo 142E & 21.4 & 4 & 121.0 & 109 & 4.11 & 2.780 & 18.60 & 1 & 1 & 4 & 2\\
+\hline
+\end{tabular}
+\end{table}
+
+\startofappendices
+
+\anappendix{Title of first appendix}
+
+\begin{longtable}[]{@{}cccl@{}}
+\caption{Table caption}\tabularnewline
+\toprule
+Right & Left & Center & Default \\
+\midrule
+\endfirsthead
+\toprule
+Right & Left & Center & Default \\
+\midrule
+\endhead
+12 & 12 & 12 & 12 \\
+123 & 123 & 123 & 123 \\
+1 & 1 & 1 & 1 \\
+\bottomrule
+\end{longtable}
+
+\anappendix{Title of second appendix}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna
+aliqua.\footnote{Lorem ipsum dolor sit amet, consectetur adipiscing
+  elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+  aliqua.}\footnote{another, non-Latin, footnote.} Lorem ipsum dolor sit
+amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur
+adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+magna aliqua.
+
+\begin{table}
+
+\caption{\label{tab:tableInAppendix}\label{tab:formal-report}Caption text}
+\centering
+\begin{tabular}[t]{lrr}
+\toprule
+Scenario & Revenue & Cost\\
+\midrule
+A & 20000 & 17000\\
+B & 30000 & 21000\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\appendicesendhere
+
+\startofreferences
+
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newenvironment{cslreferences}%
+  {\setlength{\parindent}{0em}%
+  \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces}%
+  {\par}
+
+
+  \newpage
+  \printbibliography[title=References]
+
+
+\end{document}
